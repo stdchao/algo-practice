@@ -3,7 +3,7 @@
 #include "util.h"
 
 #undef DEBUG
-
+#undef PRINT
 #undef TEST
 
 /* insertion sort */
@@ -105,9 +105,56 @@ void mergeSort(int* arr, int first, int last)
 }
 
 /* quick sort */
-void quickSort()
+
+// partition arr into two subArr divided by an element,
+// return the index of the element
+int partition(int* arr, int i, int j)
 {
+	// select the compare element and swap to the head of arr
+	int cpos = rand() % (j-i+1) + i;
+	int ckey = arr[cpos];
+	arr[cpos] = arr[i];
+	arr[i] = ckey;
+
+	// partition ipos and jpos for subArr tail that divided
+	int ipos = i;
+	int jpos = i + 1;
+#ifdef DEBUG 
+	printf("parition: [%d,%d]\n", i, j);
+	printArr(arr, j-i+1, 1);
+#endif
+	while(jpos <= j)
+	{
+		if(arr[jpos] < ckey)
+		{
+			ipos++;
+			int tmp = arr[jpos];
+			arr[jpos] = arr[ipos];
+			arr[ipos] = tmp;
+		}
+		jpos++;
+#ifdef DEBUG
+		printArr(arr, j-i+1, jpos);
+#endif
+	}
 	
+	// swap the compare element to tail of min subArr
+	arr[i] = arr[ipos];
+	arr[ipos] = ckey;
+#ifdef DEBUG
+		printArr(arr, j-i+1, jpos);
+#endif
+	return ipos;
+}
+
+void quickSort(int* arr, int i, int j)
+{
+	if(i < j)
+	{
+		int r = partition(arr, i, j);
+		quickSort(arr, i, r-1);
+		quickSort(arr, r+1, j);
+	}
 }
 
 /* main */
@@ -116,27 +163,46 @@ int main(int argc, char** argv)
 	int arr[] = {5,3,1,4,6,2};
 	int length = sizeof(arr)/sizeof(int);
 	printArr(arr, length, 0);
-	
-	int arr2[] = {11,70,72,82,10,25,36,44,60};
-	int length2 = sizeof(arr2)/sizeof(int);
-	printArr(arr2, length2, 0);
-	
-	int length3 = 10000;
-	int arr3[length3];
 
-	generateRandom(arr3, length3, 0, 100000);
-	printArr(arr3, length3, 0);
-	startRuntime("insertSort");
-	insertSort(arr3, length3);
-	endRuntime("insertSort");
-	printArr(arr3, length3, -1);
+	int lenArr[5] = {10, 100, 1000, 10000, 100000};
+	for(int i = 0; i < 5; i++){ 
+ 		int testLength = lenArr[i];
+		int testArr[testLength];
+		printf("\nN = %d\n", testLength);
+ 		
+ 		generateRandom(testArr, testLength, 0, 100000); 
+#ifdef PRINT
+		printArr(testArr, testLength, 0);
+#endif
+ 		startRuntime("insertSort");
+		insertSort(testArr, testLength);
+ 		endRuntime("insertSort");
+#ifdef PRINT
+ 		printArr(testArr, testLength, -1);
+#endif
 
-	generateRandom(arr3, length3, 0, 100000);
-	printArr(arr3, length3, 0);
-	startRuntime("mergeSort");
-	mergeSort(arr3, 0, length3-1);
-	endRuntime("mergeSort");
-	printArr(arr3, length3, -1);
+		generateRandom(testArr, testLength, 0, 100000);
+#ifdef PRINT
+ 		printArr(testArr, testLength, 0);
+#endif
+ 		startRuntime("mergeSort");
+		mergeSort(testArr, 0, testLength-1);
+ 		endRuntime("mergeSort");
+#ifdef PRINT
+		printArr(testArr, testLength, -1);
+#endif
 	
+ 		generateRandom(testArr, testLength, 0, 100000);
+#ifdef PRINT
+		printArr(testArr, testLength, 0);
+#endif
+ 		startRuntime("quickSort");
+		quickSort(testArr, 0, testLength-1);
+ 		endRuntime("quickSort");
+#ifdef PRINT
+		printArr(testArr, testLength, -1); 
+#endif
+	}
+
 	return 0;
 }

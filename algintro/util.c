@@ -7,7 +7,7 @@ struct timeval startTime, endTime;
 void startRuntime(char* str)
 {
 	gettimeofday(&startTime, NULL);
-	printf("\nstart %s:\n", str);
+	printf("start %s:\n", str);
 }
 
 void endRuntime(char* str)
@@ -32,6 +32,7 @@ void printArr(int* arr, int length, int process)
 
 void generateRandom(int* randomArr, int length, int low, int high)
 {
+ 	srand((unsigned)time(NULL));
 	int rangeLength = high - low + 1;
 	int rangeArr[rangeLength];
 	for(int i = low; i <= high; i++)
