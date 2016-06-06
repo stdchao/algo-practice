@@ -19,10 +19,32 @@ void endRuntime(char* str)
 
 void printArr(int* arr, int length, int process)
 {
-	printf("arr %d:\t", process);
+	if(process == 0)
+		printf("\n");
+
+	printf("arr %d: ", process);
 	for(int i=0; i<length; i++)
 	{
-		printf("%d\t", arr[i]);
+		printf("%6d", arr[i]);
 	}
 	printf("\n");
+}
+
+void generateRandom(int* randomArr, int length, int low, int high)
+{
+	int rangeLength = high - low + 1;
+	int rangeArr[rangeLength];
+	for(int i = low; i <= high; i++)
+		rangeArr[i] = i;
+
+	for(int i = 0; i < length; i++)
+	{
+		int index = rand() % rangeLength;
+		int tmp = rangeArr[i];
+		rangeArr[i] = rangeArr[index];
+		rangeArr[index] = tmp;
+	}
+
+	for(int i = 0; i < length; i++)
+		randomArr[i] = rangeArr[i];
 }
