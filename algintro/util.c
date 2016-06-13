@@ -1,8 +1,16 @@
-#include <stdio.h>
-#include <sys/time.h>
+#include "util.h"
 
 /* public values */
 struct timeval startTime, endTime;
+
+// get current time
+uint64_t getCurrentMilliSec()
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	uint64_t currentMilliSec = (uint64_t)(tv.tv_sec) * 1000 + (uint64_t)(tv.tv_usec) / 1000;
+	return currentMilliSec;
+}
 
 void startRuntime(char* str)
 {

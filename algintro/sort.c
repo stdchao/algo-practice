@@ -1,12 +1,10 @@
-#include <stdlib.h>
-#include <string.h>
 #include "util.h"
 
 #undef DEBUG
 #undef PRINT
-#undef TEST
+#define TEST
 
-/* insertion sort */
+/*--------------------------- insertion sort ----------------------------*/
 void insertSort(int* arr, int length)
 {
 	for(int i=1; i<length; i++)
@@ -25,7 +23,7 @@ void insertSort(int* arr, int length)
 	}
 }
 
-/* merge sort - divide and conquer */
+/*------------------- merge sort - divide and conquer -------------------*/
 
 // merge two sorted arr[i:j-1] and arr[j:k]
 void merge(int* arr, int i, int j, int k)
@@ -46,7 +44,9 @@ void merge(int* arr, int i, int j, int k)
 			tmp[tpos] = arr[ipos];
 			ipos++;
 			tpos++;
-		}else{
+		}
+		else
+		{
 			tmp[tpos] = arr[jpos];
 			jpos++;
 			tpos++;
@@ -104,7 +104,7 @@ void mergeSort(int* arr, int first, int last)
 	}
 }
 
-/* quick sort */
+/*-------------------------- quick sort ---------------------------------*/
 
 // partition arr into two subArr divided by an element,
 // return the index of the element
@@ -137,12 +137,12 @@ int partition(int* arr, int i, int j)
 		printArr(arr, j-i+1, jpos);
 #endif
 	}
-	
+
 	// swap the compare element to tail of min subArr
 	arr[i] = arr[ipos];
 	arr[ipos] = ckey;
 #ifdef DEBUG
-		printArr(arr, j-i+1, jpos);
+	printArr(arr, j-i+1, jpos);
 #endif
 	return ipos;
 }
@@ -157,7 +157,60 @@ void quickSort(int* arr, int i, int j)
 	}
 }
 
-/* main */
+/*-------------------------- heap sort ----------------------------------*/
+
+/* fix down to sub max heap in arr[i..size-1] */
+void fixdownMaxHeap(int* arr, int i, int size)
+{
+	int tmp = arr[i];
+	int maxpos = 2*i + 1;
+	
+	while(maxpos < size)
+	{
+		if(maxpos + 1 < size && arr[maxpos+1] > arr[maxpos])
+			++maxpos;
+
+		if(tmp >= arr[maxpos])
+			break;
+
+		arr[i] = arr[maxpos];
+		i = maxpos;
+		maxpos = 2*i + 1;
+	}
+	arr[i] = tmp;
+}
+
+/* build max heap */
+void makeMaxHeap(int* arr, int size)
+{
+	for(int i = ((size-1)-1)/2; i>=0; i--)
+		fixdownMaxHeap(arr, i, size);
+#ifdef DEBUG
+	printArr(arr, size, size);
+#endif
+}
+
+/* sort ascend in max heap */
+void heapSortAscend(int* arr, int size)
+{
+	for(int i = size-1; i >= 1; i--)
+	{
+		// swap min value to array tail
+		int tmp = arr[0];
+		arr[0] = arr[i];
+		arr[i] = tmp;
+		// fixdown minHeap
+		fixdownMaxHeap(arr, 0, i);
+#ifdef DEBUG
+		printArr(arr, size, i);
+#endif
+	}
+}
+
+/*-------------------------------- line sort ----------------------------*/
+
+
+/*-------------------------------- main --------------------------------*/
 int main(int argc, char** argv) 
 {
 	int arr[] = {5,3,1,4,6,2};
@@ -165,43 +218,61 @@ int main(int argc, char** argv)
 	printArr(arr, length, 0);
 
 	int lenArr[5] = {10, 100, 1000, 10000, 100000};
-	for(int i = 0; i < 5; i++){ 
- 		int testLength = lenArr[i];
+	for(int i = 0; i < 5; i++){
+		int testLength = lenArr[i];
 		int testArr[testLength];
 		printf("\nN = %d\n", testLength);
- 		
- 		generateRandom(testArr, testLength, 0, 100000); 
+
+#ifdef TEST
+		// insert sort
+		generateRandom(testArr, testLength, 0, 100000); 
 #ifdef PRINT
 		printArr(testArr, testLength, 0);
 #endif
- 		startRuntime("insertSort");
+		startRuntime("insertSort");
 		insertSort(testArr, testLength);
- 		endRuntime("insertSort");
-#ifdef PRINT
- 		printArr(testArr, testLength, -1);
-#endif
-
-		generateRandom(testArr, testLength, 0, 100000);
-#ifdef PRINT
- 		printArr(testArr, testLength, 0);
-#endif
- 		startRuntime("mergeSort");
-		mergeSort(testArr, 0, testLength-1);
- 		endRuntime("mergeSort");
+		endRuntime("insertSort");
 #ifdef PRINT
 		printArr(testArr, testLength, -1);
 #endif
-	
- 		generateRandom(testArr, testLength, 0, 100000);
+
+		// merge sort
+		generateRandom(testArr, testLength, 0, 100000);
 #ifdef PRINT
 		printArr(testArr, testLength, 0);
 #endif
- 		startRuntime("quickSort");
-		quickSort(testArr, 0, testLength-1);
- 		endRuntime("quickSort");
+		startRuntime("mergeSort");
+		mergeSort(testArr, 0, testLength-1);
+		endRuntime("mergeSort");
 #ifdef PRINT
-		printArr(testArr, testLength, -1); 
+		printArr(testArr, testLength, -1);
 #endif
+
+		// quick sort
+		generateRandom(testArr, testLength, 0, 100000);
+#ifdef PRINT
+		printArr(testArr, testLength, 0);
+#endif
+		startRuntime("quickSort");
+		quickSort(testArr, 0, testLength-1);
+		endRuntime("quickSort");
+#ifdef PRINT
+		printArr(testArr, testLength, -1);
+#endif
+		// heap sort
+		generateRandom(testArr, testLength, 0, 100000);
+#ifdef PRINT
+		printArr(testArr, testLength, 0);
+#endif
+		startRuntime("heapSort");
+		makeMaxHeap(testArr, testLength);
+		heapSortAscend(testArr, testLength);
+		endRuntime("heapSort");
+#ifdef PRINT
+		printArr(testArr, testLength, -1);
+#endif
+#endif //TEST
+		
 	}
 
 	return 0;
