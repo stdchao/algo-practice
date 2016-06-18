@@ -1,8 +1,8 @@
 #include "util.h"
 
 #undef DEBUG
-#undef PRINT
 #define TEST
+#undef PRINT
 
 /*--------------------------- insertion sort ----------------------------*/
 void insertSort(int* arr, int length)
@@ -207,8 +207,90 @@ void heapSortAscend(int* arr, int size)
 	}
 }
 
-/*-------------------------------- line sort ----------------------------*/
+/*-------------------------------radix sort ----------------------------*/
+// counting sort
+void countSort(int* arr, int size, int k)
+{
+	//
+	int sortArr[size];
+	memset(sortArr, 0, sizeof(int) * size);
 
+	int countArr[k];
+	// initialize
+	for(int i=0; i<k; i++)
+		countArr[i] = 0;
+
+	// count for arr[j]
+	for(int j=0; j<size; j++)
+		countArr[arr[j]] += 1;
+#ifdef DEBUG
+	printArr(countArr, k, -2);
+#endif	
+	// count for smaller than arr[j]
+	for(int i=1; i<k; i++)
+		countArr[i] += countArr[i-1];
+#ifdef DEBUG
+	printArr(countArr, k, -2);
+#endif
+	// sort
+	for(int j=size-1; j>=0; j--)
+	{
+		sortArr[countArr[arr[j]]-1] = arr[j];
+		countArr[arr[j]] -= 1;
+#ifdef DEBUG
+		printArr(sortArr, size, j);
+#endif
+	}
+	//
+	memcpy(arr, sortArr, size*sizeof(int));
+}
+
+// radix sort
+void radixSort(int* arr, int size, int radix, int digit)
+{
+	for(int n = 0; n < digit; n++)
+	{
+		// init count array
+		int countArr[radix];
+		memset(countArr, 0, sizeof(int) * radix);
+		
+		// fill count array
+		int k = pow(radix, n);
+		for(int i = 0; i < size; i++)
+		{
+			int value = (arr[i] / k) % radix;
+			countArr[value] += 1;
+		}
+#ifdef DEBUG
+			printArr(countArr, radix, 0);
+#endif
+
+		for(int i = 1; i < radix; i++)
+			countArr[i] += countArr[i-1];
+#ifdef DEBUG
+			printArr(countArr, radix, 0);
+#endif
+		
+		// sort arr
+		int sortArr[size];
+		memset(sortArr, 0, sizeof(int) * size);
+		for(int j = size - 1; j >= 0; j--)
+		{
+			int value = (arr[j] / k) % radix;
+			sortArr[countArr[value] - 1] = arr[j];
+			countArr[value] -= 1;
+#ifdef DEBUG
+			printArr(sortArr, size, j);
+#endif
+		}
+
+		//
+		memcpy(arr, sortArr, sizeof(int) * size);
+#ifdef DEBUG
+		printArr(arr, size, n);
+#endif
+	}
+}
 
 /*-------------------------------- main --------------------------------*/
 int main(int argc, char** argv) 
@@ -268,6 +350,28 @@ int main(int argc, char** argv)
 		makeMaxHeap(testArr, testLength);
 		heapSortAscend(testArr, testLength);
 		endRuntime("heapSort");
+#ifdef PRINT
+		printArr(testArr, testLength, -1);
+#endif
+		// count sort
+		generateRandom(testArr, testLength, 0, 100000);
+#ifdef PRINT
+		printArr(testArr, testLength, 0);
+#endif
+		startRuntime("countSort");
+		countSort(testArr, testLength, 100001);
+		endRuntime("countSort");
+#ifdef PRINT
+		printArr(testArr, testLength, -1);
+#endif
+		// radix sort
+		generateRandom(testArr, testLength, 0, 100000);
+#ifdef PRINT
+		printArr(testArr, testLength, 0);
+#endif
+		startRuntime("radixSort");
+		radixSort(testArr, testLength, 10, 5);
+		endRuntime("radixSort");
 #ifdef PRINT
 		printArr(testArr, testLength, -1);
 #endif
