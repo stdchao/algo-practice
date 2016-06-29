@@ -1,7 +1,7 @@
 #include "util.h"
 
-#undef DEBUG
-#define TEST
+#define DEBUG
+#undef TEST
 #undef PRINT
 
 /*--------------------------- insertion sort ----------------------------*/
@@ -120,8 +120,8 @@ int partition(int* arr, int i, int j)
 	int ipos = i;
 	int jpos = i + 1;
 #ifdef DEBUG 
-	printf("parition: [%d,%d]\n", i, j);
-	printArr(arr, j-i+1, 1);
+	printf("parition: [%d,%d] %d\n", i, j, ckey);
+	printSubArr(arr, i, j);
 #endif
 	while(jpos <= j)
 	{
@@ -134,7 +134,7 @@ int partition(int* arr, int i, int j)
 		}
 		jpos++;
 #ifdef DEBUG
-		printArr(arr, j-i+1, jpos);
+		printSubArr(arr, i, j);
 #endif
 	}
 
@@ -142,7 +142,8 @@ int partition(int* arr, int i, int j)
 	arr[i] = arr[ipos];
 	arr[ipos] = ckey;
 #ifdef DEBUG
-	printArr(arr, j-i+1, jpos);
+	printSubArr(arr, i, j);
+	printf("return: [%d]\n", ipos);
 #endif
 	return ipos;
 }
@@ -295,8 +296,9 @@ void radixSort(int* arr, int size, int radix, int digit)
 /*-------------------------------- main --------------------------------*/
 int main(int argc, char** argv) 
 {
-	int arr[] = {5,3,1,4,6,2};
+	int arr[] = {5,3,4,1,4,6,4,2};
 	int length = sizeof(arr)/sizeof(int);
+	quickSort(arr, 0, length-1);
 	printArr(arr, length, 0);
 
 	int lenArr[5] = {10, 100, 1000, 10000, 100000};

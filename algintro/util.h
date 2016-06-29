@@ -16,6 +16,8 @@ void endRuntime(char* str);
 
 // debug print for array
 void printArr(int* arr, int length, int process);
+void printSubArr(int* arr, int i, int j);
+
 
 // generate random array
 void generateRandom(int* randomArr, int length, int low, int high);

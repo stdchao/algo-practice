@@ -33,7 +33,16 @@ void printArr(int* arr, int length, int process)
 	printf("arr %d: ", process);
 	for(int i=0; i<length; i++)
 	{
-		printf("%6d", arr[i]);
+		printf("%d ", arr[i]);
+	}
+	printf("\n");
+}
+
+void printSubArr(int* arr, int i, int j){
+	printf("arr[%d..%d]: ", i, j);
+	for(int k = i; k <= j; k++)
+	{
+		printf("%d ", arr[k]);
 	}
 	printf("\n");
 }
