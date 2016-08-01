@@ -200,7 +200,7 @@ void heapSortAscend(int* arr, int size)
 		int tmp = arr[0];
 		arr[0] = arr[i];
 		arr[i] = tmp;
-		// fixdown minHeap
+		// fixdown maxHeap
 		fixdownMaxHeap(arr, 0, i);
 #ifdef DEBUG
 		printArr(arr, size, i);
