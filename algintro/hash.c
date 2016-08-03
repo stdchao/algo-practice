@@ -238,10 +238,133 @@ void chained_hashtable_test(){
 	}
 }
 
+/**************************open address hash table*****************************/
+typedef struct Oslot{
+	int key;
+	int value;
+	// 1 vacated and 0 fill
+	int flag;
+} Oslot;
+
+typedef struct Oht{
+	int size;
+	Oslot** slots;
+} Oht;
+
+void oht_init(Oht* oht, int size){
+	oht->size = size;
+	oht->slots = (Oslot**) malloc(size * sizeof(Oslot*));
+	memset(oht->slots, 0, size * sizeof(Oslot*)); 
+}
+
+int oht_hash_key(int key, int i, int m){
+	//return (key % m + i) % m;
+	return ((key % m) + i * (1 + key % (m-1))) % m;
+}
+
+int oht_search(Oht* oht, int key){
+	// travel list of the key
+	for(int i = 0; i < oht->size; i++){
+		int hashkey = oht_hash_key(key, i, oht->size);
+		// check travel list is enough 
+		printf("search key %d ->", hashkey);
+		
+		if(oht->slots[hashkey] == NULL){
+			// not found key
+			return -1;
+		}else if(oht->slots[hashkey]->flag == 0 && oht->slots[hashkey]->key == key){
+			return oht->slots[hashkey]->value;
+		}
+	}
+
+	// not found key
+	return -1;
+}
+
+int oht_insert(Oht* oht, int key, int value){
+	// travel list of the key
+	for(int i = 0; i < oht->size; i++){
+		int hashkey = oht_hash_key(key, i, oht->size);
+
+		if(oht->slots[hashkey] == NULL || oht->slots[hashkey]->flag == 1){
+			oht->slots[hashkey] = (Oslot*) malloc(sizeof(Oslot));
+			oht->slots[hashkey]->key = key;
+			oht->slots[hashkey]->value = value;
+			oht->slots[hashkey]->flag = 0;
+			// insert success
+			return 0;
+		}else if(oht->slots[hashkey]->key == key){
+			oht->slots[hashkey]->value = value;
+		}
+	}
+	// hash full and insert failed
+	return -1;
+}
+
+int oht_delete(Oht* oht, int key){
+	// travel list of the key
+	for(int i = 0; i < oht->size; i++){
+		int hashkey = oht_hash_key(key, i, oht->size);
+
+		if(oht->slots[hashkey] == NULL){
+			// not found and delete failed
+			return -1;
+		}else if(oht->slots[hashkey]->flag == 0 && oht->slots[hashkey]->key == key){
+			// delete success
+			oht->slots[hashkey]->flag = 1;
+			return 0;
+		}
+	}
+	// not found and delete failed
+	return -1;
+}
+
+void oht_print(Oht* oht){
+	printf("Start->");
+	for(int i = 0; i < oht->size; i++){
+		if(oht->slots[i] == NULL){
+			printf("NULL ->");
+		}else{
+			printf("%d:{%d,%d,%d} ->", i, oht->slots[i]->key, oht->slots[i]->value,oht->slots[i]->flag);
+		}
+	}
+	printf("End\n");
+}
+
+void oht_test(){
+	Oht oht;
+	int size = 10;
+
+	printf("\ninit oht\n");
+	oht_init(&oht, size);
+	oht_print(&oht);
+
+	printf("\ntest insert\n");
+	for(int i = 0; i < size; i++){
+		srand(i);
+		int key = rand() % 100;
+		int value = rand() % 1000;
+		printf("insert {%d,%d}\n", key, value);
+		oht_insert(&oht, key, value);
+		oht_print(&oht);
+	}
+
+	printf("\ntest search\n");
+	int key = 101;
+	int search_result = oht_search(&oht, key);
+	if(search_result == -1){
+		printf("search key %d not found\n", key);
+	}else{
+		printf("search key {%d,%d} success\n", key, search_result);
+	}
+}
+
 /************************************main**************************************/
 int main(int argc, char** argv){
 	//direct_address_test();
 
-	chained_hashtable_test();
+	//chained_hashtable_test();
+
+	oht_test();
 	return 0;
 }
