@@ -1,8 +1,3 @@
-# algo-practice
+# 我的算法学习笔记
 
-This is a project for data struction and algorithm exercise
-
-# change logs
-
-- 20160401 - intcode - fibonacci
-- 20170419 - config local user.name&user.email
+从基础的数据结构与算法实现，到Leetcode刷题，保持对编程和算法的热情。
