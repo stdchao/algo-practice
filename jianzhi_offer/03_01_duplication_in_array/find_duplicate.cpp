@@ -66,7 +66,7 @@ int contains(int numbers[], int length, int number){
   return false;
 }
 
-void test(char const* testName, int numbers[], int nLength, int expected[], int eLength, bool valid){
+void test(const char* testName, int numbers[], int nLength, int expected[], int eLength, bool valid){
   // 输入测试用例，判断find_duplicate是否正确
   printf("%s begins: ", testName);
 
