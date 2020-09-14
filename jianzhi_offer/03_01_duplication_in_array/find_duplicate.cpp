@@ -16,6 +16,9 @@ using namespace std;
  * 返回值：
  *  true 输入有效，且存在重复数字
  *  false 输入无效，或不存在重复数字
+ * 复杂度：
+ *  时间 O(2n)
+ *  空间 O(1)
  */
 bool find_duplicate(int numbers[], int length, int* duplication){
   // 判断无效输入
