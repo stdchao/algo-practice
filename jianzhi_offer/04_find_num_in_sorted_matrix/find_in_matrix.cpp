@@ -30,19 +30,19 @@ using namespace std;
  */
 bool find_num_in_sorted_matrix(int *matrix, int rows, int cols, int number){
   // 判断输入有效
-  if(matrix != nullptr && rows > 0 && cols > 0){
+  if(matrix == nullptr || rows <= 0 || cols <= 0)
+    return false;
     
-    int row = 0;
-    int col = cols - 1;
-    // 算法：从右上角，或左下角开始查找，每次可以排除一行或一列，达到效率最大化
-    while(row < rows && col >= 0 ){
-      if(matrix[row * cols + col] == number){
-        return true;
-      }else if(matrix[row * cols + col] > number){
-        --col;
-      }else{
-        ++row;
-      }
+  int row = 0;
+  int col = cols - 1;
+  // 算法：从右上角，或左下角开始查找，每次可以排除一行或一列，达到效率最大化
+  while(row < rows && col >= 0 ){
+    if(matrix[row * cols + col] == number){
+      return true;
+    }else if(matrix[row * cols + col] > number){
+      --col;
+    }else{
+      ++row;
     }
   }
   return false;
