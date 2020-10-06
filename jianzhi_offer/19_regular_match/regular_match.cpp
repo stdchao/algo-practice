@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 using namespace std;
 
 /*
@@ -74,43 +75,90 @@ bool regular_match_dp(const char* str, const char* pattern){
 
   int size_str = strlen(str); // 字符串长度，不计入'\0'
   int size_ptn = strlen(pattern);
-  bool dp[size_str+1][size_ptn+1]; // dp[i][j] 代表的是长度i的str与长度j的ptn是否匹配
-  memset(dp, false, sizeof(dp));
+
+  // dp[i][j] 代表的是长度i的str与长度j的ptn是否匹配
+  vector<vector<bool > > dp(size_str+1, vector<bool>(size_ptn+1, false));
   dp[0][0] = true; // 空字符串与空模式，匹配成功
 
   for(int i = 0; i <= size_str; i++){ // 从空字符开始，为了'.*'这样的模式
     for(int j = 1; j <= size_ptn; j++){ // 从长度为1开始，因为字符不为空，模式为空，必然不匹配
-      if(i == 0 && j == 1){ // 字符串为空，模式串长度为1
+      
+      // 字符串为空，模式串长度为1
+      if(i == 0 && j == 1){ 
         dp[i][j] = false;
       }
+
+      // 字符串为空，模式串长度大于1
+      if(i == 0 && j > 1){
+        if(pattern[j-1] == '*'){ 
+            dp[i][j] = dp[i][j-2];
+        }else{
+            dp[i][j] = false;
+        }
+      }
       
-      if(i > 0 && j == 1){ // 字符串不为空，模式串长度为1
-        if(pattern[j-1] == str[i-1] || pattern[j] == '.'){
+      // 字符串不为空，模式串长度为1
+      if(i > 0 && j == 1){ 
+        if(pattern[j-1] == str[i-1] || pattern[j-1] == '.'){
           dp[i][j] = dp[i-1][j-1];
         }else{
           dp[i][j] = false;
         }
       }
 
-      if(i > 0 && j > 1 && pattern[j-1] == '*'){ // 字符串不为空，模式串长度大于1
-        if(pattern[j-2] == str[i-1] || pattern[j-2] == '.'){
-          dp[i][j] = dp[i][j-2] || dp[i-1][j-2] || dp[i-1][j];
+      // 字符串不为空，模式串长度大于1
+      if(i > 0 && j > 1){ 
+        if(pattern[j-1] == '*'){ 
+          if(pattern[j-2] == str[i-1] || pattern[j-2] == '.'){
+            dp[i][j] = dp[i][j-2] || dp[i-1][j-2] || dp[i-1][j];
+          }else{
+            dp[i][j] = dp[i][j-2];
+          }
         }else{
-          dp[i][j] = dp[i][j-2];
-        }
-      }else{
-        if(pattern[j-1] == str[i] || pattern[j-1] == '.'){
-          dp[i][j] = dp[i-1][j-1];
-        }else{
-          dp[i][j] = false;
+          if(pattern[j-1] == str[i-1] || pattern[j-1] == '.'){
+            dp[i][j] = dp[i-1][j-1];
+          }else{
+            dp[i][j] = false;
+          }
         }
       }
+
     }
   }
 
   return dp[size_str][size_ptn];
 }
 
+// 参考 https://zhuanlan.zhihu.com/p/104115952
+bool regular_match_dp_v2(const char* str, const char* pattern){
+  // 判断输入有效
+  if(str == nullptr || pattern == nullptr)
+    return false;
+
+  int size_str = strlen(str);
+  int size_ptn = strlen(pattern);
+  
+  // dp[i][j] 表示前i个字符的字符串与前j个字符的正则式是否匹配
+  vector<vector<bool > > dp(size_str+1, vector<bool>(size_ptn+1, false));
+  dp[0][0] = true; //空字符串与空正则式匹配成功
+
+  for(int i = 0; i <= size_str; i++){
+    for(int j = 1; j <= size_ptn; j++){
+      // v2: 合并上个版本函数的冗余逻辑, 只需要保留是dp[i][j]=true的分支
+
+      if(j > 1 && pattern[j-1] == '*'){ // 正则式长度大于1，且尾部为'*'
+        if(i > 0) // 字符串非空且*取多个
+          dp[i][j] = dp[i-1][j] && (pattern[j-2] == str[i-1] || pattern[j-2] == '.');
+        dp[i][j] = dp[i][j] || dp[i][j-2]; // 字符串非空且*取零，或字符串为空
+
+      }else if(i > 0){ // 尾部匹配字符串尾部
+        dp[i][j] = dp[i-1][j-1] && (pattern[j-1] == str[i-1] || pattern[j-1] == '.');
+      }
+    }
+  }
+
+  return dp[size_str][size_ptn];
+}
 
 /*
  * 测试代码
@@ -120,7 +168,7 @@ void Test(const char* testName, const char* string, const char* pattern, bool ex
   if(testName != nullptr)
     printf("%s begins: ", testName);
 
-  if(regular_match_dp(string, pattern) == expected)
+  if(regular_match_dp_v2(string, pattern) == expected)
     printf("Passed.\n");
   else
     printf("FAILED.\n");

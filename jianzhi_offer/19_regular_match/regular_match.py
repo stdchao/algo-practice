@@ -38,11 +38,40 @@ def regular_match(string, pattern):
     else:
       return False
 
+def regular_match_dp(string, pattern):
+  '''
+  动态规划实现正则式匹配
+  参考https://github.com/hhzzxx957/Jianzhi-offer_python/blob/master/problems/jianzhi19.md
+  '''
+  # 判断输入有效
+  if string == None or pattern == None:
+    return False
+  
+  # 帮助空字符匹配
+  string, pattern = '#' + string, '#' + pattern
+  size_str, size_ptn = len(string), len(pattern)
+  
+  # dp[i][j] 代表前i长度的字符串与前j长度的正则式是否匹配
+  dp = [[False] * size_ptn for _ in range(size_str)]
+  dp[0][0] = True # 空字符串和空正则式匹配成功
+  
+  for i in range(size_str): # 从空字符串开始，因为需要考虑为'.*'或'a*'的正则式可以匹配
+    for j in range(1, size_ptn): # 从长度为1的正则式开始，因为空正则式肯定不匹配非空字符串
+        # 只需要考虑使dp[i][j]=true的逻辑分支
+        if i == 0: # 空字符串
+          dp[i][j] = j > 1 and pattern[j] == '*' and dp[i][j-2]
+        elif pattern[j] in [string[i], '.']: # 字符串非空，正则式尾部匹配
+          dp[i][j] = dp[i-1][j-1]
+        elif pattern[j] == '*': # 字符串非空，正则式尾部为'*'
+          dp[i][j] = (j > 1 and dp[i][j-2]) or \
+                     (pattern[j-1] in [string[i], '.'] and dp[i-1][j]) # *取0个或多个
+  return dp[-1][-1]
+
 def Test(name, string, pattern, expected):
   if name:
     print(name, " begins: ", end=' ')
   
-  if(regular_match(string, pattern) == expected):
+  if(regular_match_dp(string, pattern) == expected):
     print("passed.")
   else:
     print("failed.")
