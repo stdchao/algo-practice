@@ -7,6 +7,7 @@
  */
 #include <iostream>
 #include <cstdio>
+#include <cstring>
 using namespace std;
 
 /*
@@ -43,9 +44,9 @@ bool regular_match_core(const char* str, const char* pattern){
     if(*str == *pattern || (*str != '\0' && *pattern == '.')){
       return regular_match_core(str+1, pattern+2) ||
         regular_match_core(str+1, pattern) || regular_match_core(str, pattern+2);
-    }else{
-      return regular_match_core(str, pattern+2);
     }
+    return regular_match_core(str, pattern+2);
+
   }else{
     if(*str == *pattern || (*str != '\0' && *pattern == '.')){
       return regular_match_core(str+1, pattern+1);
@@ -53,6 +54,63 @@ bool regular_match_core(const char* str, const char* pattern){
     return false;
   }
 }
+
+/* 
+ * Solution 动态规划，实现自底向上的正则匹配
+ * dp[i][j] 代表的是长度i的str与长度j的ptn是否匹配
+ * p[j-1] == '*'
+ * -> p[j-2] == s[i-1] or p[j-2] == '.' -> dp[i][j] = dp[i][j-2] 0个
+ *                          || dp[i-1][j-2] 1个|| dp[i-1][j] 多个
+ *                                      -> dp[i][j] = dp[i][j-2]
+ * p[j-1] != '*'
+ * -> p[j-1] == s[i-1] or p[j-1] == '.' -> dp[i][j] = dp[i-1][j-1]
+ *                                      -> dp[i][j] = false
+ * 
+ */
+bool regular_match_dp(const char* str, const char* pattern){
+  // 判断输入有效
+  if(str == nullptr || pattern == nullptr)
+    return false;
+
+  int size_str = strlen(str); // 字符串长度，不计入'\0'
+  int size_ptn = strlen(pattern);
+  bool dp[size_str+1][size_ptn+1]; // dp[i][j] 代表的是长度i的str与长度j的ptn是否匹配
+  memset(dp, false, sizeof(dp));
+  dp[0][0] = true; // 空字符串与空模式，匹配成功
+
+  for(int i = 0; i <= size_str; i++){ // 从空字符开始，为了'.*'这样的模式
+    for(int j = 1; j <= size_ptn; j++){ // 从长度为1开始，因为字符不为空，模式为空，必然不匹配
+      if(i == 0 && j == 1){ // 字符串为空，模式串长度为1
+        dp[i][j] = false;
+      }
+      
+      if(i > 0 && j == 1){ // 字符串不为空，模式串长度为1
+        if(pattern[j-1] == str[i-1] || pattern[j] == '.'){
+          dp[i][j] = dp[i-1][j-1];
+        }else{
+          dp[i][j] = false;
+        }
+      }
+
+      if(i > 0 && j > 1 && pattern[j-1] == '*'){ // 字符串不为空，模式串长度大于1
+        if(pattern[j-2] == str[i-1] || pattern[j-2] == '.'){
+          dp[i][j] = dp[i][j-2] || dp[i-1][j-2] || dp[i-1][j];
+        }else{
+          dp[i][j] = dp[i][j-2];
+        }
+      }else{
+        if(pattern[j-1] == str[i] || pattern[j-1] == '.'){
+          dp[i][j] = dp[i-1][j-1];
+        }else{
+          dp[i][j] = false;
+        }
+      }
+    }
+  }
+
+  return dp[size_str][size_ptn];
+}
+
 
 /*
  * 测试代码
@@ -62,7 +120,7 @@ void Test(const char* testName, const char* string, const char* pattern, bool ex
   if(testName != nullptr)
     printf("%s begins: ", testName);
 
-  if(regular_match(string, pattern) == expected)
+  if(regular_match_dp(string, pattern) == expected)
     printf("Passed.\n");
   else
     printf("FAILED.\n");
@@ -101,6 +159,7 @@ int main(int argc, char* argv[])
   Test("Test29", "bbbba", ".*a*a", true);
   Test("Test30", "bcbbabab", ".*a*a", false);
 
+  Test("test31", "", "*", false);
   return 0;
 }
 
