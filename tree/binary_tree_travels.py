@@ -1,6 +1,9 @@
-class TreeNode:
-  def __init__(self, x):
-    self.val = x
+'''
+二叉树的前中后序以及层次遍历的递归与迭代实现
+'''
+class BinaryTreeNode:
+  def __init__(self, value):
+    self.value = value
     self.left = None
     self.right = None
 
@@ -14,14 +17,14 @@ def preorder_traversal_recursive(root):
     if not node:
       return None
     
-    res.append(node.val)
+    res.append(node.value)
     travel(node.left)
     travel(node.right)
   
   travel(root)
   return res
 
-def preorder_traversal(root):
+def preorder_traversal_iterative(root):
   '''
   二叉树的前序遍历，迭代实现，用辅助栈完成:
     1. 对于每个节点，先查询其值，
@@ -38,7 +41,7 @@ def preorder_traversal(root):
 
     # 对每个节点，查询其值，右子节点压栈，然后继续访问左子节点，直至左子节点为空
     while cur:
-      res.append(cur.val)
+      res.append(cur.value)
       if cur.right:
         stack.append(cur.right)
       cur = cur.left
@@ -58,13 +61,13 @@ def inorder_traversal_recursive(root):
 
     # 递归调用  
     travel(node.left)
-    res.append(node.val)
+    res.append(node.value)
     travel(node.right)
 
   travel(root)
   return res
 
-def inorder_traversal(root):
+def inorder_traversal_iterative(root):
   '''
   二叉树的中序遍历，迭代实现，用辅助栈完成:
     1. 对于每一个节点，深度遍历其左子节点，不断压栈，直到没有左子节点；
@@ -83,7 +86,7 @@ def inorder_traversal(root):
 
     # 弹出栈顶节点
     cur = stack.pop()
-    res.append(cur.val)
+    res.append(cur.value)
 
     # 继续遍历栈顶节点的右子节点
     cur = cur.right
@@ -102,12 +105,12 @@ def postorder_traversal_recursive(root):
     
     travel(node.left)
     travel(node.right)
-    res.append(node.val)
+    res.append(node.value)
   
   travel(root)
   return res
 
-def postorder_traversal(root):
+def postorder_traversal_iterative(root):
   '''
   二叉树的后续遍历，迭代实现:
     参考前序遍历思路，但不同的时，将左子节点压栈，迭代访问右子节点，最后结果反序
@@ -119,7 +122,7 @@ def postorder_traversal(root):
     cur = stack.pop()
 
     while cur:
-      res.append(cur.val)
+      res.append(cur.value)
       if cur.left:
         stack.append(cur.left)
       cur = cur.right
@@ -142,7 +145,7 @@ def levelorder_traversal_recursive(root):
       res.append([])
       
     # 当前节点放入层对应的维
-    res[level].append(node.val)
+    res[level].append(node.value)
 
     # 递归调用
     if node.left:
@@ -153,7 +156,7 @@ def levelorder_traversal_recursive(root):
   travel(root, 0)
   return res
 
-def levelorder_travelsal(root):
+def levelorder_travelsal_iterative(root):
   '''
   层次遍历，迭代实现，辅助队列实现:
     和递归思路完全一致
@@ -171,7 +174,7 @@ def levelorder_travelsal(root):
     if len(res) == level:
       res.append([])
     
-    res[level].append(cur.val)
+    res[level].append(cur.value)
         
     if cur.left:
       queue.append((cur.left, level+1))
@@ -181,25 +184,49 @@ def levelorder_travelsal(root):
   return res
 
 if __name__ == "__main__":
-  root = TreeNode(1)
-  root.left = TreeNode(2)
-  root.right = TreeNode(3)
-  root.left.left = TreeNode(4)
-  root.left.right = TreeNode(5)
-  root.right.left = TreeNode(6)
+  '''
+           10
+     6          14
+   4   8    12     16
+  3 5 7 9  11 13 15  17
+  '''
+  node10 = BinaryTreeNode(10)
+  node6 = BinaryTreeNode(6)
+  node14 = BinaryTreeNode(14)
+  node4 = BinaryTreeNode(4)
+  node8 = BinaryTreeNode(8)
+  node12 = BinaryTreeNode(12)
+  node16 = BinaryTreeNode(16)
+  node3 = BinaryTreeNode(3)
+  node5 = BinaryTreeNode(5)
+  node7 = BinaryTreeNode(7)
+  node9 = BinaryTreeNode(9)
+  node11 = BinaryTreeNode(11)
+  node13 = BinaryTreeNode(13)
+  node15 = BinaryTreeNode(15)
+  node17 = BinaryTreeNode(17)
 
+  node10.left, node10.right = node6, node14
+  node6.left, node6.right = node4, node8
+  node14.left, node14.right = node12, node16
+  node4.left, node4.right = node3, node5
+  node8.left, node8.right = node7, node9
+  node12.left, node12.right = node11, node13
+  node16.left, node16.right = node15, node17
+
+  root = node10
   # 前序遍历
   print('前序遍历，递归实现', preorder_traversal_recursive(root))
-  print('前序遍历，迭代实现', preorder_traversal(root))
+  print('前序遍历，迭代实现', preorder_traversal_iterative(root))
 
   # 中序遍历
   print('中序遍历，递归实现', inorder_traversal_recursive(root))
-  print('中序遍历，迭代实现', inorder_traversal(root))
+  print('中序遍历，迭代实现', inorder_traversal_iterative(root))
 
   # 后续遍历
   print('后续遍历，递归实现', postorder_traversal_recursive(root))
-  print('后续遍历，迭代实现', postorder_traversal(root))
+  print('后续遍历，迭代实现', postorder_traversal_iterative(root))
 
   # 层次遍历
   print('层次遍历，递归实现', levelorder_traversal_recursive(root))
-  print('层次遍历，迭代实现', levelorder_travelsal(root))
+  print('层次遍历，迭代实现', levelorder_travelsal_iterative(root))
