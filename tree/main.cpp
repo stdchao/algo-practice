@@ -68,6 +68,14 @@ void test(){
   postorder_travelsal_iterative2(pNode1);
   printf("\n");
 
+  printf("Levelorder(recursive):");
+  levelorder_travelsal_recursive(pNode1);
+  printf("\n");
+
+  printf("Levelorder(iterative):");
+  levelorder_travelsal_iterative(pNode1);
+  printf("\n");
+
   DestroyTree(pNode1);
 }
 
