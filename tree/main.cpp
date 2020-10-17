@@ -32,19 +32,41 @@ void test(){
   ConnectNode(pNode6, pNode12, pNode13);
   ConnectNode(pNode7, pNode14, pNode15);
 
-  printf("Print Tree(default): ");
+  printf("Print Tree(default):  ");
   PrintTree(pNode1);
   printf("\n");
 
-  printf("Preorder(recursive): ");
+  printf("Preorder(recursive):  ");
   preorder_travelsal_recursive(pNode1);
   printf("\n");
 
-  printf("Preorder(iterative): ");
-  preorder_travelsal_iterative(pNode1);
+  printf("Preorder(iterative1): ");
+  preorder_travelsal_iterative1(pNode1);
   printf("\n");
 
-  
+  printf("Preorder(iterative2): ");
+  preorder_travelsal_iterative2(pNode1);
+  printf("\n");
+
+  printf("inorder(recursive):   ");
+  inorder_travelsal_recursive(pNode1);
+  printf("\n");
+
+  printf("inorder(iterative):   ");
+  inorder_travelsal_iterative(pNode1);
+  printf("\n");
+
+  printf("Postorder(recursive): ");
+  postorder_travelsal_recursive(pNode1);
+  printf("\n");
+
+  printf("Postorder(iterative1):");
+  postorder_travelsal_iterative1(pNode1);
+  printf("\n");
+
+  printf("Postorder(iterative2):");
+  postorder_travelsal_iterative2(pNode1);
+  printf("\n");
 
   DestroyTree(pNode1);
 }
