@@ -18,15 +18,19 @@ def find_path_in_tree(root, target):
       return
     
     # 将当前结点加入路径，计算与目标值差距，作为新的目标值
+    path.append(root.value)
     target -= root.value
     
     # 当该结点是叶子结点
     if not root.left and not root.right and target == 0:
-      res.append(path + [root.value])
+      res.append(path.copy()) # 这里要保存path的拷贝
     
     # 若不是叶子结点，遍历包含该结点的所有其他路径
-    dfs(root.left, target, path + [root.value], res)
-    dfs(root.right, target, path + [root.value], res)
+    dfs(root.left, target, path, res)
+    dfs(root.right, target, path, res)
+
+    # 遍历完该结点所有路径后，弹出返回父结点
+    path.pop()
   
   res = []
   dfs(root, target, [], res)
